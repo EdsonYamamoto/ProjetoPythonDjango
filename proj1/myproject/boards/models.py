@@ -25,6 +25,7 @@ class Topic(models.Model):
         Board, related_name='topics', on_delete=models.CASCADE,)
     starter = models.ForeignKey(
         User, related_name='topics', on_delete=models.CASCADE,)
+    views = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.subject
