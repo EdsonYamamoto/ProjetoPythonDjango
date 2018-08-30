@@ -1,6 +1,7 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render
-from .models import Topic
-from .models import Board
+from .forms import PostForm
+from .models import Board, Topic
 
 # Create your views here.
 
