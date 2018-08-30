@@ -27,7 +27,9 @@
             {% with post=board.get_last_post %}
               {% if post %}
                 <small>
-                  <a href="{% url 'topic_posts' board.pk post.topic.pk %}">
+                  <a href="{#% url 'topic_posts' board.pk post.topic.pk %}">
+                      <h1>{{board.pk}}</h1>
+                      <h1>{{post.topic.pk}}</h1>
                     By {{ post.created_by.username }} at {{ post.created_at }}
                   </a>
                 </small>
@@ -41,3 +43,6 @@
     </tbody>
   </table>
 {% endblock %}
+
+
+
