@@ -6,10 +6,13 @@ from ..views import home, board_topics, new_topic
 from ..models import Board, Topic, Post
 from ..forms import NewTopicForm
 
+
 class NewTopicTests(TestCase):
     def setUp(self):
         Board.objects.create(name='Django', description='Django board.')
-        User.objects.create_user(username='john', email='john@doe.com', password='123')  # <- included this line here
+        # <- included this line here
+        User.objects.create_user(
+            username='john', email='john@doe.com', password='123')
         self.client.login(username='john', password='123')
 
     def test_new_topic_view_success_status_code(self):
@@ -33,17 +36,17 @@ class NewTopicTests(TestCase):
         self.assertContains(response, 'href="{0}"'.format(board_topics_url))
 
     def test_csrf(self):
-        url = reverse('new_topic',kwargs={'pk':1})
+        url = reverse('new_topic', kwargs={'pk': 1})
         response = self.client.get(url)
         self.assertContains(response, 'csrfmiddlewaretoken')
 
     def test_new_topic_valid_post_data(self):
-        url = reverse('new_topic',kwargs={'pk':1})
+        url = reverse('new_topic', kwargs={'pk': 1})
         data = {
-            'subject':'Test tittle',
-            'message':'Lorem xD'
+            'subject': 'Test tittle',
+            'message': 'Lorem xD'
         }
-        resolve = self.client.post(url,data)
+        resolve = self.client.post(url, data)
         self.assertTrue(Topic.objects.exists())
         self.assertTrue(Post.objects.exists())
 
@@ -67,7 +70,7 @@ class NewTopicTests(TestCase):
         response = self.client.get(url)
         form = response.context.get('form')
         self.assertIsInstance(form, NewTopicForm)
-    
+
     def test_new_topic_invalid_post_data(self):  # <- updated this one
         '''
         Invalid post data should not redirect
@@ -79,6 +82,7 @@ class NewTopicTests(TestCase):
         self.assertEquals(response.status_code, 200)
         self.assertTrue(form.errors)
 
+
 class LoginRequiredNewTopicTests(TestCase):
     def setUp(self):
         Board.objects.create(name='Django', description='Django board.')
@@ -87,4 +91,5 @@ class LoginRequiredNewTopicTests(TestCase):
 
     def test_redirection(self):
         login_url = reverse('login')
-        self.assertRedirects(self.response, '{login_url}?next={url}'.format(login_url=login_url, url=self.url))
+        self.assertRedirects(self.response, '{login_url}?next={url}'.format(
+            login_url=login_url, url=self.url))
