@@ -12,30 +12,27 @@ class ReplyTopicTestCase(TestCase):
     '''
 
     def setUp(self):
-        self.board = Board.objects.create(
-            name='Django', description='Django board.')
+        self.board = Board.objects.create( name='Django', description='Django board.')
         self.username = 'john'
         self.password = '123'
-        user = User.objects.create_user(
-            username=self.username, email='john@doe.com', password=self.password)
-        self.topic = Topic.objects.create(
-            subject='Hello World', board=self.board, starter=user)
+        user = User.objects.create_user( username=self.username, email='john@doe.com', password=self.password)
+        self.topic = Topic.objects.create( subject='Hello World', board=self.board, starter=user)
         Post.objects.create(message='Lorem', topic=self.topic, created_by=user)
-        self.url = reverse('reply_topic', kwargs={
-                           'pk': self.board.pk, 'topic_pk': self.topic.pk})
-
-
-class LoginRequiredReplyTopicTests(ReplyTopicTestCase):
-    print('LoginRequiredReplyTopicTests')
-
-
-class ReplyTopicTests(ReplyTopicTestCase):
-    print('ReplyTopicTests')
-
-
+        self.url = reverse('reply_topic', kwargs={ 'pk': self.board.pk, 'topic_pk': self.topic.pk})
+        
+        self.client.login(username='john', password='123')
 class SuccessfulReplyTopicTests(ReplyTopicTestCase):
-    print('SuccessfulReplyTopicTests')
+    # ...
 
+    def setUp(self):
+        super().setUp()
+        self.client.login(username=self.username, password=self.password)
+        self.response = self.client.post(self.url,{"message":"hellowordk"})
 
-class InvalidReplyTopicTests(ReplyTopicTestCase):
-    print('InvalidReplyTopicTests')
+    def test_redirection(self):
+        '''
+        A valid form submission should redirect the user
+        '''
+        url = reverse('topic_posts', kwargs={'pk': self.board.pk, 'topic_pk': self.topic.pk})
+        topic_posts_url = '{url}?page=1#2'.format(url=url)
+        self.assertRedirects(self.response, topic_posts_url)
